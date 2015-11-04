@@ -85,6 +85,15 @@
                         </div>
                     </div>
                     <div class="col-md-12">
+                        <br />
+                        <label>Ingredients:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <span id="tagsAdv"></span>
+                        <br /><br />
+                        <input type="text" class="form-control" id="ingredientsTypeAdv" />
+                        <input type="hidden" id="ingredientsAdv" name="ingredients" />
+                        <p class="help-block">Press "comma(,)" after each ingredient</p>
+                    </div>
+                    <div class="col-md-12">
                         <p>&nbsp;</p>
                     </div>
                     <div class="col-md-12">
@@ -115,8 +124,8 @@
             <p>&nbsp;</p>
             <div id="recipeList">
                 <c:forEach var="i" begin="0" end="${recipeList.size()-1}">
-                    <a href="Recipe?task=single&recipeId=${recipeList.get(i).getRecipeId()}">
-                        <div class="col-md-4">
+                    <div class="col-md-4">
+                        <a href="Recipe?task=single&recipeId=${recipeList.get(i).getRecipeId()}">
                             <div class="panel panel-default">
                                 <div class="panel-body">
                                     <img src="${recipeList.get(i).getImage()}" class="img-responsive" />
@@ -128,9 +137,17 @@
                                     <h3><b>Type: </b>${recipeList.get(i).getDiet()}</h3>
                                 </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </c:forEach>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <fieldset>
+                <legend><h2>Web Results</h2></legend>
+            </fieldset>
+            <div id="apiContent">
+                
             </div>
         </div>
         
@@ -143,9 +160,17 @@
             
             $(document).ready(function(){
                 $("#advanceZone").hide();
-                $.getJSON('https://api.edamam.com/search?q=chicken&app_id=24572922&app_key=c82a86336f7a415a59569fff1b6b3ee7',
+                $.getJSON('http://food2fork.com/api/search?key=1219478d0bcf288a52a5629bffc9b98f',
                     function (data) {
-                        console.log(JSON.stringify(data));
+                        var apiData = JSON.stringify(data);
+                        console.log(apiData); 
+                        var web = "";
+                        $.each(data.recipes, function(index, element) {
+                            web += "<div class='col-md-4'><a href='"+element.source_url+"' target='_blank'><div class='panel panel-default'>\n\
+                                    <div class='panel-body'><img class='img-responsive' src='"+element.image_url+"' />\n\
+                                    <br /><h3>"+element.title+"</h3></div></div></a></div>";
+                        });
+                        $("#apiContent").html(web);
                     }
                 );
             });
@@ -174,11 +199,20 @@
                 }
             });
             
+            $("#ingredientsTypeAdv").on('keypress',function(e) {
+                if(e.keyCode == 44) {
+                    e.preventDefault();
+                    var fun = "removeIngredient('"+$("#ingredientsTypeAdv").val()+"',this)";
+                    var tag = '<button type="button" onclick="'+fun+';" class="btn btn-sm btn-default">'+$("#ingredientsTypeAdv").val()+'&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-remove" style="color:red"></span></button>&nbsp;&nbsp;&nbsp;';
+                    $("#ingredientsAdv").val($("#ingredientsAdv").val()+","+$("#ingredientsTypeAdv").val());
+                    $("#tagsAdv").html($("#tagsAdv").html()+tag);
+                    $("#ingredientsTypeAdv").val("");
+                }
+            });
+            
             function advanceSearch(){
-                console.log($("#advName").val()+$("#advCusine").val()+$("#advDiet").val()+$("#advTime").val()+$("#advCalories").val());
-                $.get('Recipe?task=advanceSearch&name='+$("#advName").val()+'&cusine='+$("#advCusine").val()+'&diet='+$("#advDiet").val()+'&time='+$("#advTime").val()+'&calories='+$("#advCalories").val(),function(responseJson) {
+                $.get('Recipe?task=advanceSearch&name='+$("#advName").val()+'&cusine='+$("#advCusine").val()+'&diet='+$("#advDiet").val()+'&time='+$("#advTime").val()+'&calories='+$("#advCalories").val()+'&ingredients='+$("#ingredientsAdv").val(),function(responseJson) {
                     if(responseJson!=null){
-                        console.log("some");
                         var parent = $("#recipeList");
                         var child = "";
                         $.each(responseJson, function(key,value) {
@@ -192,8 +226,8 @@
                                             <h3><b>Cuisine: </b>'+value['cusine']+'</h3>\n\
                                             <h3><b>Type: </b>'+value['diet']+'</h3>\n\
                                             </div></div></div></a>';
-                            parent.html(child);
                         });
+                        parent.html(child);
                     }else{
                         console.log("null");
                     }
@@ -241,6 +275,19 @@
                                             </div></div></div></a>';
                                 parent.html(child);
                             });
+                            $.getJSON('http://food2fork.com/api/search?key=1219478d0bcf288a52a5629bffc9b98f&q='+recipeName,
+                                    function (data) {
+                                        var apiData = JSON.stringify(data);
+                                        console.log(apiData); 
+                                        var web = "";
+                                        $.each(data.recipes, function(index, element) {
+                                            web += "<div class='col-md-4'><a href='"+element.source_url+"' target='_blank'><div class='panel panel-default'>\n\
+                                                    <div class='panel-body'><img class='img-responsive' src='"+element.image_url+"' />\n\
+                                                    <br /><h3>"+element.title+"</h3></div></div></a></div>";
+                                        });
+                                        $("#apiContent").html(web);
+                                    }
+                                );
                         }
                     });
                 }else{
@@ -266,6 +313,19 @@
                                             </div></div></div></a>';
                                 parent.html(child);
                             });
+                            $.getJSON('http://food2fork.com/api/search?key=1219478d0bcf288a52a5629bffc9b98f',
+                                    function (data) {
+                                        var apiData = JSON.stringify(data);
+                                        console.log(apiData); 
+                                        var web = "";
+                                        $.each(data.recipes, function(index, element) {
+                                            web += "<div class='col-md-4'><a href='"+element.source_url+"' target='_blank'><div class='panel panel-default'>\n\
+                                                    <div class='panel-body'><img class='img-responsive' src='"+element.image_url+"' />\n\
+                                                    <br /><h3>"+element.title+"</h3></div></div></a></div>";
+                                        });
+                                        $("#apiContent").html(web);
+                                    }
+                                );
                         }
                     });
             }

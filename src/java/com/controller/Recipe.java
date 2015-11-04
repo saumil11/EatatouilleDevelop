@@ -60,6 +60,7 @@ public class Recipe extends HttpServlet {
             String calories = request.getParameter("calories");
             String time = request.getParameter("time");
             String steps = request.getParameter("steps");
+            String ingList = request.getParameter("ingredients");
             UserDetailsBean userDetailsBean = (UserDetailsBean)session.getAttribute("userDetails");
             String userId = userDetailsBean.getUserId();
             
@@ -124,28 +125,40 @@ public class Recipe extends HttpServlet {
                     break;
                     
                 case "advanceSearch":
-                    if(cusine == null){
-                        cusine = "";
-                    }
-                    if(diet == null){
-                        diet = "";
-                    }
-                    if(name == null){
-                        name = "";
-                    }
-                    if(calories == null){
-                        calories = "1000000";
-                    }
-                    if(time == null){
-                        time = "1000000";
-                    }
                     recipeBean.setCalories(calories);
                     recipeBean.setCusine(cusine);
                     recipeBean.setDiet(diet);
                     recipeBean.setName(name);
                     recipeBean.setTime(time);
-                    recipeDetails = recipeDAO.advanceSearch(recipeBean);
                     
+                    if(!"".equals(cusine)){
+                        System.out.println("changes1");
+                        recipeDetails = recipeDAO.getRecipeByCusine(recipeBean, recipeDetails);
+                    }
+                    if(!"".equals(diet)){
+                        System.out.println("changes2");
+                        recipeDetails = recipeDAO.getRecipeByDiet(recipeBean, recipeDetails);
+                    }
+                    if(!"".equals(name)){
+                        System.out.println("changes3");
+                        recipeDetails = recipeDAO.getRecipeByName(name, recipeDetails);
+                    }
+                    if(!"".equals(calories)){
+                        System.out.println("changes4");
+                        recipeDetails = recipeDAO.getRecipeByCalories(recipeBean, recipeDetails);
+                    }
+                    if(!"".equals(time)){
+                        System.out.println("changes5");
+                        recipeDetails = recipeDAO.getRecipeByTime(recipeBean, recipeDetails);
+                    }
+                    
+                    System.out.println("ingprev "+ingList);
+                    if(ingList != null){
+                        System.out.println("ing");
+                        String ingredientsList[] = ingList.split(",");
+                        recipeDetails = recipeDAO.getRecipeByIngredients(ingredientsList, recipeDetails);
+                    }
+                                      
                     element = gson.toJsonTree(recipeDetails, new TypeToken<List<RecipeBean>>() {}.getType());
                     jsonArray = element.getAsJsonArray();
                     response.setContentType("application/json");

@@ -24,28 +24,34 @@ public class RecipeDAO {
     Statement s = null;
     ResultSet rs = null;
     
-    public ArrayList advanceSearch(RecipeBean recipeBean){
+    public ArrayList advanceSearch(RecipeBean rb){
     
-        String name = recipeBean.getName();
-        String diet = recipeBean.getDiet();
-        String cusine = recipeBean.getCusine();
-        String calories = recipeBean.getCalories();
-        String time = recipeBean.getTime();
+        String name = rb.getName();
+        String diet = rb.getDiet();
+        String cusine = rb.getCusine();
+        String calories = rb.getCalories();
+        String time = rb.getTime();
         
         ArrayList<RecipeBean> recipe = new ArrayList<RecipeBean>();
-        recipeBean  = new RecipeBean();
         
         try{
         
             con = DBConnection.createConnection();
             
-            String query = "select * from recipeDetails where calories < ?";
+            String query = "select * from recipeDetails where calories < ? && time < ? || name like ?"
+                    + " || diet like ? || cusine like ?";
             ps = con.prepareStatement(query);
             ps.setString(1, calories);
+            ps.setString(2, time);
+            ps.setString(3, "%"+name+"%");
+            ps.setString(4, "%"+diet+"%");
+            ps.setString(5, "%"+cusine+"%");
+            
             rs = ps.executeQuery();
             
             while(rs.next()){
-                System.out.println("loop");
+                RecipeBean recipeBean  = new RecipeBean();
+                System.out.println("loop"+rs.getString("calories"));
                 recipeBean.setCalories(rs.getString("calories"));
                 recipeBean.setCusine(rs.getString("cusine"));
                 recipeBean.setDiet(rs.getString("diet"));
@@ -55,6 +61,253 @@ public class RecipeDAO {
                 recipeBean.setRecipeId(rs.getString("recipeId"));
                 recipe.add(recipeBean);
             }
+           
+            con.close();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+        return recipe;
+        
+    }
+    
+    public ArrayList getRecipeByCusine(RecipeBean rb, ArrayList recipe){
+    
+        String cusine = rb.getCusine();
+        
+        try{
+        
+            con = DBConnection.createConnection();
+            
+            String query = "select * from recipeDetails where cusine like ?";
+            ps = con.prepareStatement(query);
+            ps.setString(1, "%"+cusine+"%");
+            
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                RecipeBean recipeBean  = new RecipeBean();
+                System.out.println("loop"+rs.getString("calories"));
+                recipeBean.setCalories(rs.getString("calories"));
+                recipeBean.setCusine(rs.getString("cusine"));
+                recipeBean.setDiet(rs.getString("diet"));
+                recipeBean.setImage(rs.getString("image"));
+                recipeBean.setName(rs.getString("name"));
+                recipeBean.setTime(rs.getString("time"));
+                recipeBean.setRecipeId(rs.getString("recipeId"));
+                recipe.add(recipeBean);
+            }
+           
+            con.close();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+        return recipe;
+        
+    }
+    
+    public ArrayList getRecipeByDiet(RecipeBean rb, ArrayList recipe){
+    
+        String diet = rb.getDiet();
+        
+        try{
+        
+            con = DBConnection.createConnection();
+            
+            String query = "select * from recipeDetails where diet like ?";
+            ps = con.prepareStatement(query);
+            ps.setString(1, "%"+diet+"%");
+            
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                RecipeBean recipeBean  = new RecipeBean();
+                System.out.println("loop"+rs.getString("calories"));
+                recipeBean.setCalories(rs.getString("calories"));
+                recipeBean.setCusine(rs.getString("cusine"));
+                recipeBean.setDiet(rs.getString("diet"));
+                recipeBean.setImage(rs.getString("image"));
+                recipeBean.setName(rs.getString("name"));
+                recipeBean.setTime(rs.getString("time"));
+                recipeBean.setRecipeId(rs.getString("recipeId"));
+                recipe.add(recipeBean);
+            }
+           
+            con.close();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+        return recipe;
+        
+    }
+    
+    public ArrayList getRecipeByCalories(RecipeBean rb, ArrayList recipe){
+    
+        String calories = rb.getCalories();
+        
+        try{
+        
+            con = DBConnection.createConnection();
+            
+            String query = "select * from recipeDetails where calories < ?";
+            ps = con.prepareStatement(query);
+            ps.setString(1, calories);
+            
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                RecipeBean recipeBean  = new RecipeBean();
+                System.out.println("loop"+rs.getString("calories"));
+                recipeBean.setCalories(rs.getString("calories"));
+                recipeBean.setCusine(rs.getString("cusine"));
+                recipeBean.setDiet(rs.getString("diet"));
+                recipeBean.setImage(rs.getString("image"));
+                recipeBean.setName(rs.getString("name"));
+                recipeBean.setTime(rs.getString("time"));
+                recipeBean.setRecipeId(rs.getString("recipeId"));
+                recipe.add(recipeBean);
+            }
+           
+            con.close();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+        return recipe;
+        
+    }
+    
+    public ArrayList getRecipeByTime(RecipeBean rb, ArrayList recipe){
+    
+        String time = rb.getTime();
+        
+        try{
+        
+            con = DBConnection.createConnection();
+            
+            String query = "select * from recipeDetails where time < ?";
+            ps = con.prepareStatement(query);
+            ps.setString(1, time);
+            
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                RecipeBean recipeBean  = new RecipeBean();
+                System.out.println("loop"+rs.getString("calories"));
+                recipeBean.setCalories(rs.getString("calories"));
+                recipeBean.setCusine(rs.getString("cusine"));
+                recipeBean.setDiet(rs.getString("diet"));
+                recipeBean.setImage(rs.getString("image"));
+                recipeBean.setName(rs.getString("name"));
+                recipeBean.setTime(rs.getString("time"));
+                recipeBean.setRecipeId(rs.getString("recipeId"));
+                recipe.add(recipeBean);
+            }
+           
+            con.close();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+        return recipe;
+        
+    }
+    
+    public ArrayList getRecipeByName(String recipeName, ArrayList recipe){
+        
+        RecipeBean recipeBean  = new RecipeBean();
+        
+        try{
+        
+            con = DBConnection.createConnection();
+            
+            String query = "select * from recipeDetails where name like ?";
+            ps = con.prepareStatement(query);
+            ps.setString(1, "%"+recipeName+"%");
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                recipeBean.setCalories(rs.getString("calories"));
+                recipeBean.setCusine(rs.getString("cusine"));
+                recipeBean.setDiet(rs.getString("diet"));
+                recipeBean.setImage(rs.getString("image"));
+                recipeBean.setName(rs.getString("name"));
+                recipeBean.setTime(rs.getString("time"));
+                recipeBean.setRecipeId(rs.getString("recipeId"));
+                recipe.add(recipeBean);
+            }
+            
+            con.close();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+        return recipe;
+        
+    }
+    
+    public ArrayList getRecipeByIngredients(String ingredients[], ArrayList recipe){
+        
+        ResultSet rs1;
+        ResultSet rs2;
+        ResultSet rs3;
+        PreparedStatement ps1;
+        PreparedStatement ps2;
+        PreparedStatement ps3;
+        
+        RecipeBean recipeBean = new RecipeBean();
+        
+        try{
+        
+            con = DBConnection.createConnection();
+            
+            String query1 = "select ingredientId from ingredientList where ingredient like ?";
+            for(int i=0;i<ingredients.length;i++){
+                if(ingredients[i].length() > 1){
+                    ps1 = con.prepareStatement(query1);
+                    ps1.setString(1, "%"+ingredients[i]+"%".toUpperCase());
+                    rs1 = ps1.executeQuery();
+
+                    while(rs1.next()){
+                        String ingredientId = rs1.getString("ingredientId");
+                        String query2 = "select recipeId from recipeIngredient where ingredientId = ?";
+                        ps2 = con.prepareStatement(query2);
+                        ps2.setString(1, ingredientId);
+                        rs2 = ps2.executeQuery();
+
+                        while(rs2.next()){
+                            String query3 = "select * from recipeDetails where recipeId = ?";
+                            ps3 = con.prepareStatement(query3);
+                            ps3.setString(1, rs2.getString("recipeId"));
+                            rs3 = ps3.executeQuery();
+
+                            while(rs3.next()){
+                                System.out.println("4");
+                                recipeBean.setCalories(rs3.getString("calories"));
+                                recipeBean.setCusine(rs3.getString("cusine"));
+                                recipeBean.setDiet(rs3.getString("diet"));
+                                recipeBean.setImage(rs3.getString("image"));
+                                recipeBean.setName(rs3.getString("name"));
+                                recipeBean.setTime(rs3.getString("time"));
+                                recipeBean.setRecipeId(rs3.getString("recipeId"));
+                                recipe.add(recipeBean);             
+                            }
+
+                        }
+
+                    }
+                }
+            }
+            
+            con.close();
             
         }catch(Exception e){
             System.out.println(e);
@@ -88,6 +341,8 @@ public class RecipeDAO {
                 recipeBean.setRecipeId(rs.getString("recipeId"));
                 recipe.add(recipeBean);
             }
+            
+            con.close();
             
         }catch(Exception e){
             System.out.println(e);
